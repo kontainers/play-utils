@@ -41,5 +41,11 @@ trait DateTimeImplicits {
       case _ => None
     }
 
+  implicit def unWrapOptionTimeStampWrapOptionLocalDate(value: Option[Timestamp]): Option[LocalDateTime] =
+    value match {
+      case Some(date) => Some(date.toLocalDateTime)
+      case _ => None
+    }
+
   implicit def dateToLocalDate(value: Date): LocalDate = value.toLocalDate
 }
