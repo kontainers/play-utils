@@ -3,3 +3,5 @@
 [![codecov.io](https://codecov.io/gh/kontainers/play-utils/coverage.svg?branch=master)](https://codecov.io/gh/kontainers/play-utils/branch/master)
 
 # play-utils
+
+Some utility classes useful for Scala based Play/Slick applications
