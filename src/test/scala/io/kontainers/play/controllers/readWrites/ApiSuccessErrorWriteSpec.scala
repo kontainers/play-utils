@@ -16,20 +16,32 @@
 package io.kontainers.play.controllers.readWrites
 
 import io.kontainers.play.controllers.{ApiError, ApiSuccess}
-import play.api.libs.json._
+import org.scalatestplus.play.PlaySpec
+import play.api.http.Status
+import play.api.libs.json.Json
 
-trait ApiSuccessErrorWrite {
-  implicit def errorWrite: Writes[ApiError] = Writes[ApiError](error =>
-    JsObject(List(
-      "reason" -> JsString(error.reason),
-      "status" -> JsNumber(error.status)
-    ))
-  )
+class ApiSuccessErrorWriteSpec extends PlaySpec with ApiSuccessErrorWrite {
 
-  implicit def successWrite: Writes[ApiSuccess] = Writes[ApiSuccess](success =>
-    JsObject(List(
-      "reason" -> JsString(success.reason),
-      "status" -> JsNumber(success.status)
-    ))
-  )
+  "ApiSuccessErrorWrite" should {
+    "write success" in {
+      asJson(ApiSuccess()) mustEqual asJson(Status.OK, "success")
+      asJson(ApiSuccess(Status.CREATED, "created")) mustEqual asJson(Status.CREATED, "created")
+    }
+    "write error" in {
+      val msg = "unexpected"
+      asJson(ApiError(Status.BAD_REQUEST, msg)) mustEqual asJson(Status.BAD_REQUEST, msg)
+    }
+  }
+
+  def asJson(a: ApiSuccess): String = {
+    Json.stringify(Json.toJson(a))
+  }
+
+  def asJson(a: ApiError): String = {
+    Json.stringify(Json.toJson(a))
+  }
+
+  def asJson(code: Int, reason: String): String = {
+    s"""{"reason":"$reason","status":$code}"""
+  }
 }
