@@ -18,7 +18,7 @@ package io.kontainers.play.controllers.readWrites
 import io.kontainers.play.controllers.{ApiError, ApiSuccess}
 import org.scalatestplus.play.PlaySpec
 import play.api.http.Status
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, Writes}
 
 class ApiSuccessErrorWriteSpec extends PlaySpec with ApiSuccessErrorWrite {
 
@@ -33,12 +33,8 @@ class ApiSuccessErrorWriteSpec extends PlaySpec with ApiSuccessErrorWrite {
     }
   }
 
-  def asJson(a: ApiSuccess): String = {
-    Json.stringify(Json.toJson(a))
-  }
-
-  def asJson(a: ApiError): String = {
-    Json.stringify(Json.toJson(a))
+  def asJson[T](t: T)(implicit writes: Writes[T]): String = {
+    Json.stringify(Json.toJson(t))
   }
 
   def asJson(code: Int, reason: String): String = {
