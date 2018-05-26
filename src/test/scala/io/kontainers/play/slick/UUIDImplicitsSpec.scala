@@ -17,10 +17,27 @@ package io.kontainers.play.slick
 
 import java.util.UUID
 
-trait UUIDImplicits {
+import org.scalatestplus.play.PlaySpec
 
-  implicit def unWrapOptionStringWrapOptionUUID(value: Option[String]): Option[UUID] =
-    value.map { UUID.fromString(_) }
+class UUIDImplicitsSpec extends PlaySpec {
 
-  implicit def stringUUID(value: String): UUID = UUID.fromString(value)
+  val uuidImplicits = new UUIDImplicits{}
+
+  "UUIDImplicit.stringUUID" should {
+    "convert strings" in {
+      val uuid = UUID.randomUUID
+      uuidImplicits.stringUUID(uuid.toString) mustEqual uuid
+    }
+  }
+
+  "UUIDImplicit.unWrapOptionStringWrapOptionUUID" should {
+    "handle None" in {
+      uuidImplicits.unWrapOptionStringWrapOptionUUID(None) mustBe empty
+    }
+    "convert strings" in {
+      val uuid = UUID.randomUUID
+      uuidImplicits.unWrapOptionStringWrapOptionUUID(Some(uuid.toString)) mustEqual Some(uuid)
+    }
+  }
+
 }
