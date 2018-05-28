@@ -26,7 +26,11 @@ class CronService @Inject() (protected val dbConfigProvider: DatabaseConfigProvi
 
   def createSchema(): Future[Unit] = db.run(cronDao.createSchema())
 
+  def deleteAll(): Future[Int] = db.run(cronDao.deleteAll())
+
   def insert(cron: Cron): Future[Int] = db.run(cronDao.insert(cron))
 
   def findByName(name: String): Future[Option[Cron]] = db.run(cronDao.findByName(name))
+
+  def findByExpression(expr: Option[String]): Future[Seq[Cron]] = db.run(cronDao.findByExpression(expr))
 }

@@ -36,6 +36,9 @@ class CronDao @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
 
   def findByName(name: String): DBIOAction[Option[Cron], NoStream, Effect.Read] = CronQuery.filter(_.name === name).result.headOption
 
+  def findByExpression(expr: Option[String]): DBIOAction[Seq[Cron], NoStream, Effect.Read] =
+    CronQuery.filterIf(expr.isDefined)(_.expression === expr.get).result
+
   def createSchema(): DBIOAction[Unit, NoStream, Effect.All] = CronQuery.schema.create
 
   // scalastyle:off
