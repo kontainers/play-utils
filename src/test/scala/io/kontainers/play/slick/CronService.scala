@@ -33,4 +33,5 @@ class CronService @Inject() (protected val dbConfigProvider: DatabaseConfigProvi
   def findByName(name: String): Future[Option[Cron]] = db.run(cronDao.findByName(name))
 
   def findByExpression(expr: Option[String]): Future[Seq[Cron]] = db.run(cronDao.findByExpression(expr))
+  def findByExpressionConcatVersion(expr: Option[String]): Future[Seq[Cron]] = db.run(cronDao.findByExpressionConcatVersion(expr))
 }

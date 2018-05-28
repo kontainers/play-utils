@@ -69,6 +69,24 @@ class CronSpec extends PlaySpec with BeforeAndAfterAll with BeforeAndAfterEach w
       foundAll must have size 2
       foundAll.head must not equal foundAll.tail
     }
+    "support query concat" in {
+      val (insertedCount, cron) = insertCron()
+      insertedCount mustEqual 1
+
+      val (insertedCount2, cron2) = insertCron("fake cron")
+      insertedCount2 mustEqual 1
+
+      val found = Await.result(service.findByExpressionConcatVersion(Some(expr)), defaultAwaitTimeout.duration)
+      found must have size 1
+      found.head mustEqual cron.copy(id = found.head.id)
+
+      val foundExpectEmpty = Await.result(service.findByExpressionConcatVersion(Some("")), defaultAwaitTimeout.duration)
+      foundExpectEmpty must have size 0
+
+      val foundAll = Await.result(service.findByExpressionConcatVersion(None), defaultAwaitTimeout.duration)
+      foundAll must have size 2
+      foundAll.head must not equal foundAll.tail
+    }
   }
 
   private def insertCron(expression: String = expr): (Int, Cron) = {

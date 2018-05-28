@@ -20,7 +20,7 @@ import java.util.UUID
 
 import javax.inject.Inject
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
-import slick.jdbc.JdbcProfile
+import slick.jdbc.{GetResult, JdbcProfile}
 
 case class Cron(id: Option[Long], uuid: UUID, name: String, expression: String, createdAt: LocalDate,
                 lastTranAt: Option[LocalDateTime], enabled: Boolean)
@@ -31,13 +31,27 @@ class CronDao @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)
 
   private val CronQuery = TableQuery[CronTable]
 
+  implicit val cronResult: GetResult[Cron] = GetResult(r => Cron(r.nextLongOption(), r.nextString(),
+    r.nextString(), r.nextString(), r.nextDate(), r.nextTimestampOption(), r.nextBoolean()))
+
   def insert(cron: Cron): DBIOAction[Int, NoStream, Effect.All] = CronQuery.insertOrUpdate(cron)
   def deleteAll(): DBIOAction[Int, NoStream, Effect.All] = CronQuery.delete
 
   def findByName(name: String): DBIOAction[Option[Cron], NoStream, Effect.Read] = CronQuery.filter(_.name === name).result.headOption
 
+  // artificial test of filterIf; if expr input is None, findByExpression selects all
   def findByExpression(expr: Option[String]): DBIOAction[Seq[Cron], NoStream, Effect.Read] =
     CronQuery.filterIf(expr.isDefined)(_.expression === expr.get).result
+
+  // artificial test of concat; if expr input is None, findByExpression selects all
+  def findByExpressionConcatVersion(expr: Option[String]): DBIOAction[Seq[Cron], NoStream, Effect.Read] = {
+    val selectBase = sql"""select * from "cron" where "id" is not null"""
+    val select = expr match {
+      case Some(e) => selectBase.concat(sql""" and "expression" = $e""")
+      case _ => selectBase
+    }
+    select.as[Cron]
+  }
 
   def createSchema(): DBIOAction[Unit, NoStream, Effect.All] = CronQuery.schema.create
 
