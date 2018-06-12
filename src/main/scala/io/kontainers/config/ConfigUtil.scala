@@ -17,12 +17,19 @@ package io.kontainers.config
 
 import com.typesafe.config.{Config, ConfigFactory, ConfigRenderOptions}
 
+import scala.collection.JavaConverters._
+
 object ConfigUtil {
   private lazy val defaultsConfig = ConfigFactory.parseResourcesAnySyntax("kontainers-defaults.conf")
 
   def getProperty(name: String, overrides: Option[String]): String = overrides match {
     case Some(o) => getConfig(o).getString(name)
     case _ => defaultsConfig.getString(name)
+  }
+
+  def getPropertyList(name: String, overrides: Option[String]): List[String] = overrides match {
+    case Some(o) => getConfig(o).getStringList(name).asScala.toList
+    case _ => defaultsConfig.getStringList(name).asScala.toList
   }
 
   def getDefaultsConfigAsText: String = configAsText(defaultsConfig)
