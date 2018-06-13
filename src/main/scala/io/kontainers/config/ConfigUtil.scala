@@ -32,6 +32,14 @@ object ConfigUtil {
     case _ => defaultsConfig.getStringList(name).asScala.toList
   }
 
+  def getSubPropertyNames(name: String, overrides: Option[String]): Set[String] = {
+    val parentCfg = overrides match {
+      case Some(o) => getConfig(o)
+      case _ => defaultsConfig
+    }
+    parentCfg.getConfig(name).entrySet().asScala.map(_.getKey).toSet
+  }
+
   def getDefaultsConfigAsText: String = configAsText(defaultsConfig)
 
   def getConfigAsText(overrides: String): String = configAsText(getConfig(overrides))
@@ -47,7 +55,7 @@ object ConfigUtil {
   }
 
   private def configAsText(cfg: Config): String = {
-    val renderOptions = ConfigRenderOptions.defaults().setComments(false).setOriginComments(false)
+    val renderOptions = ConfigRenderOptions.defaults().setComments(false).setFormatted(false)
     cfg.root().render(renderOptions)
   }
 

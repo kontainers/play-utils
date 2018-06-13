@@ -76,23 +76,26 @@ class ConfigUtilSpec extends PlaySpec {
       cfg.getStringList(listPropName) mustEqual List("xyz").asJava
     }
     "update config with new property" in {
-      val originalProps = """test {
-                            |  control1=["v1"]
-                            |  control2=["v2"]
-                            |}""".stripMargin
-      val updateProps = """test {
-                          |  control2=["vx"]
-                          |}""".stripMargin
+      val originalProps =
+        """test {
+          |  control1=["v1"]
+          |  control2=["v2"]
+          |}""".stripMargin
+      val updateProps =
+        """test {
+          |  control2=["vx"]
+          |}""".stripMargin
       val newConfig = ConfigUtil.updateConfig(originalProps, updateProps)
       val cfg = ConfigFactory.parseString(newConfig)
       cfg.getStringList("test.control1") mustEqual List("v1").asJava
       cfg.getStringList("test.control2") mustEqual List("vx").asJava
     }
     "remove property from config" in {
-      val originalProps = """test {
-                            |  control1=["v1"]
-                            |  control2=["v2"]
-                            |}""".stripMargin
+      val originalProps =
+        """test {
+          |  control1=["v1"]
+          |  control2=["v2"]
+          |}""".stripMargin
       val removeProp = "test.control2"
       val newConfig = ConfigUtil.deleteConfig(originalProps, removeProp)
       val cfg = ConfigFactory.parseString(newConfig)
@@ -100,6 +103,16 @@ class ConfigUtilSpec extends PlaySpec {
       intercept[ConfigException.Missing] {
         cfg.getStringList("test.control2")
       }
+    }
+  }
+  "ConfigUtil getSubPropertyNames" should {
+    "handle nested properties from default config" in {
+      ConfigUtil.getSubPropertyNames("kontainers.core.nested", None) mustEqual Set("config1.prop", "config2.prop")
+    }
+    "handle extra nested properties in override" in {
+      val overrides = "kontainers.core.nested.configx=vx\nkontainers.core.nested.configy.arg=varg"
+      ConfigUtil.getSubPropertyNames("kontainers.core.nested", Some(overrides)) mustEqual
+        Set("config1.prop", "config2.prop", "configx", "configy.arg")
     }
   }
 }
