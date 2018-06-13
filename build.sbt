@@ -53,6 +53,8 @@ licenses := Seq("The Apache Software License, Version 2.0" -> url("http://www.ap
 
 releasePublishArtifactsAction := PgpKeys.publishSigned.value
 
+publishConfiguration := publishConfiguration.value.withOverwrite(true)
+
 pomExtra := (
   <scm>
     <url>git@github.com:kontainers/play-utils.git</url>
