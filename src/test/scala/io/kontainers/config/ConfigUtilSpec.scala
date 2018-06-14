@@ -115,4 +115,10 @@ class ConfigUtilSpec extends PlaySpec {
         Set("config1.prop", "config2.prop", "configx", "configy.arg")
     }
   }
+  "ConfigUtil renderOptions" should {
+    "omit origin comments" in {
+      ConfigUtil.renderOptions.getOriginComments mustEqual false
+      ConfigUtil.renderOptions.getComments mustEqual false
+    }
+  }
 }

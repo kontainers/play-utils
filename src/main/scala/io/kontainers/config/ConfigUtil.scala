@@ -54,10 +54,10 @@ object ConfigUtil {
     configAsText(newConfig)
   }
 
-  private def configAsText(cfg: Config): String = {
-    val renderOptions = ConfigRenderOptions.defaults().setComments(false).setFormatted(false)
-    cfg.root().render(renderOptions)
-  }
+  private[config] def renderOptions =
+    ConfigRenderOptions.defaults().setComments(false).setOriginComments(false)
+
+  private def configAsText(cfg: Config): String = cfg.root().render(renderOptions)
 
   private def getConfig(overrides: String): Config = {
     ConfigFactory.parseString(overrides).withFallback(defaultsConfig)
