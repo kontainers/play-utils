@@ -2,13 +2,13 @@ organization := "io.kontainers"
 
 name := "play-utils"
 
-scalaVersion := "2.12.4"
+scalaVersion := "2.12.6"
 
 scalacOptions += "-target:jvm-1.8"
 
 checksums in update := Nil
 
-val playVersion = "2.6.13"
+val playVersion = "2.6.15"
 
 libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play" % playVersion,
