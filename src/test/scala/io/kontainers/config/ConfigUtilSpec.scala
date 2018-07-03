@@ -47,6 +47,10 @@ class ConfigUtilSpec extends PlaySpec {
       val cfg = ConfigFactory.parseString(newConfig)
       cfg.getString("test.control1") mustEqual "v1"
       cfg.getString("test.control2") mustEqual "vx"
+      // shoudln't include default properties from kontainers-defaults.conf
+      intercept[ConfigException.Missing] {
+        cfg.getString("kontainers.core.sample")
+      }
     }
     "remove property from config" in {
       val originalProps = "test.control1=v1\ntest.control2=v2"

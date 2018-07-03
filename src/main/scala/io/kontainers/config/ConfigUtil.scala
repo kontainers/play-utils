@@ -23,18 +23,18 @@ object ConfigUtil {
   private lazy val defaultsConfig = ConfigFactory.parseResourcesAnySyntax("kontainers-defaults.conf")
 
   def getProperty(name: String, overrides: Option[String]): String = overrides match {
-    case Some(o) => getConfig(o).getString(name)
+    case Some(o) => getConfigWithDefaults(o).getString(name)
     case _ => defaultsConfig.getString(name)
   }
 
   def getPropertyList(name: String, overrides: Option[String]): List[String] = overrides match {
-    case Some(o) => getConfig(o).getStringList(name).asScala.toList
+    case Some(o) => getConfigWithDefaults(o).getStringList(name).asScala.toList
     case _ => defaultsConfig.getStringList(name).asScala.toList
   }
 
   def getSubPropertyNames(name: String, overrides: Option[String]): Set[String] = {
     val parentCfg = overrides match {
-      case Some(o) => getConfig(o)
+      case Some(o) => getConfigWithDefaults(o)
       case _ => defaultsConfig
     }
     parentCfg.getConfig(name).entrySet().asScala.map(_.getKey).toSet
@@ -42,7 +42,7 @@ object ConfigUtil {
 
   def getDefaultsConfigAsText: String = configAsText(defaultsConfig)
 
-  def getConfigAsText(overrides: String): String = configAsText(getConfig(overrides))
+  def getConfigAsText(overrides: String): String = configAsText(getConfigWithDefaults(overrides))
 
   def updateConfig(configText: String, updatedText: String): String = {
     val newConfig = getConfig(updatedText).withFallback(getConfig(configText))
@@ -50,7 +50,7 @@ object ConfigUtil {
   }
 
   def deleteConfig(configText: String, propertyToRemove: String): String = {
-    val newConfig = getConfig(configText).withoutPath(propertyToRemove)
+    val newConfig = getConfigWithDefaults(configText).withoutPath(propertyToRemove)
     configAsText(newConfig)
   }
 
@@ -59,7 +59,11 @@ object ConfigUtil {
 
   private def configAsText(cfg: Config): String = cfg.root().render(renderOptions)
 
+  private def getConfigWithDefaults(overrides: String): Config = {
+    getConfig(overrides).withFallback(defaultsConfig)
+  }
+
   private def getConfig(overrides: String): Config = {
-    ConfigFactory.parseString(overrides).withFallback(defaultsConfig)
+    ConfigFactory.parseString(overrides)
   }
 }
