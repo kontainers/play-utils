@@ -50,7 +50,7 @@ object ConfigUtil {
   }
 
   def deleteConfig(configText: String, propertyToRemove: String): String = {
-    val newConfig = getConfigWithDefaults(configText).withoutPath(propertyToRemove)
+    val newConfig = getConfig(configText).withoutPath(propertyToRemove)
     configAsText(newConfig)
   }
 

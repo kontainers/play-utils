@@ -61,6 +61,9 @@ class ConfigUtilSpec extends PlaySpec {
       intercept[ConfigException.Missing] {
         cfg.getString("test.control2")
       }
+      intercept[ConfigException.Missing] {
+        cfg.getString("kontainers.core.sample")
+      }
     }
   }
 
